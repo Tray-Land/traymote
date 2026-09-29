@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Traymote (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Traymote (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
