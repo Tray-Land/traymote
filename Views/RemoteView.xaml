@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="Traymote.Views.RemoteView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:services="using:Traymote.Services">
+
+    <UserControl.Resources>
+        <Style x:Key="RoundButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+            <Setter Property="Width" Value="52" />
+            <Setter Property="Height" Value="52" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="26" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="PadButtonStyle" TargetType="RepeatButton">
+            <Setter Property="Width" Value="56" />
+            <Setter Property="Height" Value="56" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="28" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Delay" Value="400" />
+            <Setter Property="Interval" Value="150" />
+        </Style>
+        <Style x:Key="IconButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid PreviewKeyDown="Root_PreviewKeyDown">
+
+        <!--  Remote  -->
+        <Grid x:Name="RemotePanel" Padding="16,12,16,16" RowSpacing="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!--  Header: device + status  -->
+            <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Ellipse
+                    x:Name="StatusDot"
+                    Width="10"
+                    Height="10"
+                    VerticalAlignment="Center"
+                    Fill="{ThemeResource SystemFillColorNeutralBrush}" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock
+                        x:Name="DeviceNameText"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="No Roku selected"
+                        TextTrimming="CharacterEllipsis" />
+                    <TextBlock
+                        x:Name="StatusText"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <Button
+                    Grid.Column="2"
+                    AutomationProperties.Name="Choose Roku"
+                    Click="ChooseDevice_Click"
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTipService.ToolTip="Choose Roku">
+                    <FontIcon FontSize="16" Glyph="&#xE7F4;" />
+                </Button>
+                <Button
+                    Grid.Column="3"
+                    AutomationProperties.Name="More options"
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTipService.ToolTip="More options">
+                    <FontIcon FontSize="16" Glyph="&#xE712;" />
+                    <Button.Flyout>
+                        <MenuFlyout Placement="BottomEdgeAlignedRight">
+                            <MenuFlyoutItem Click="Reconnect_Click" Text="Reconnect">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE72C;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Click="Settings_Click" Text="Settings">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE713;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutSeparator />
+                            <MenuFlyoutItem Click="Exit_Click" Text="Exit Traymote">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE8BB;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+            </Grid>
+
+            <!--  Back / * / Home  -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button
+                    AutomationProperties.Name="Back"
+                    Click="Key_Click"
+                    Style="{StaticResource RoundButtonStyle}"
+                    Tag="Back"
+                    ToolTipService.ToolTip="Back (Backspace)">
+                    <FontIcon FontSize="18" Glyph="&#xE72B;" />
+                </Button>
+                <Button
+                    Grid.Column="1"
+                    AutomationProperties.Name="Options (star)"
+                    Click="Key_Click"
+                    Style="{StaticResource RoundButtonStyle}"
+                    Tag="Info"
+                    ToolTipService.ToolTip="Options * (I)">
+                    <TextBlock
+                        Margin="0,6,0,0"
+                        FontSize="28"
+                        FontWeight="SemiBold"
+                        Text="*" />
+                </Button>
+                <Button
+                    Grid.Column="2"
+                    AutomationProperties.Name="Home"
+                    Click="Key_Click"
+                    Style="{StaticResource RoundButtonStyle}"
+                    Tag="Home"
+                    ToolTipService.ToolTip="Home (H)">
+                    <FontIcon FontSize="18" Glyph="&#xE80F;" />
+                </Button>
+            </Grid>
+
+            <!--  D-pad  -->
+            <Grid
+                Grid.Row="2"
+                Width="200"
+                Height="200"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{ThemeResource ControlFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="100">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <RepeatButton
+                    Grid.Column="1"
+                    AutomationProperties.Name="Up"
+                    Click="Key_Click"
+                    Style="{StaticResource PadButtonStyle}"
+                    Tag="Up">
+                    <FontIcon Glyph="&#xE70E;" />
+                </RepeatButton>
+                <RepeatButton
+                    Grid.Row="1"
+                    AutomationProperties.Name="Left"
+                    Click="Key_Click"
+                    Style="{StaticResource PadButtonStyle}"
+                    Tag="Left">
+                    <FontIcon Glyph="&#xE76B;" />
+                </RepeatButton>
+                <Button
+                    x:Name="OkButton"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Width="64"
+                    Height="64"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    AutomationProperties.Name="OK"
+                    Click="Key_Click"
+                    Content="OK"
+                    CornerRadius="32"
+                    FontWeight="SemiBold"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Tag="Select"
+                    ToolTipService.ToolTip="OK (Enter)" />
+                <RepeatButton
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    AutomationProperties.Name="Right"
+                    Click="Key_Click"
+                    Style="{StaticResource PadButtonStyle}"
+                    Tag="Right">
+                    <FontIcon Glyph="&#xE76C;" />
+                </RepeatButton>
+                <RepeatButton
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    AutomationProperties.Name="Down"
+                    Click="Key_Click"
+                    Style="{StaticResource PadButtonStyle}"
+                    Tag="Down">
+                    <FontIcon Glyph="&#xE70D;" />
+                </RepeatButton>
+            </Grid>
+
+            <!--  Rewind / Play-Pause / Fast forward  -->
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button
+                    AutomationProperties.Name="Rewind"
+                    Click="Key_Click"
+                    Style="{StaticResource RoundButtonStyle}"
+                    Tag="Rev"
+                    ToolTipService.ToolTip="Rewind (,)">
+                    <FontIcon FontSize="18" Glyph="&#xEB9E;" />
+                </Button>
+                <Button
+                    Grid.Column="1"
+                    AutomationProperties.Name="Play or pause"
+                    Click="Key_Click"
+                    Style="{StaticResource RoundButtonStyle}"
+                    Tag="Play"
+                    ToolTipService.ToolTip="Play/Pause (Space)">
+                    <StackPanel Orientation="Horizontal" Spacing="1">
+                        <FontIcon FontSize="14" Glyph="&#xE768;" />
+                        <FontIcon FontSize="14" Glyph="&#xE769;" />
+                    </StackPanel>
+                </Button>
+                <Button
+                    Grid.Column="2"
+                    AutomationProperties.Name="Fast forward"
+                    Click="Key_Click"
+                    Style="{StaticResource RoundButtonStyle}"
+                    Tag="Fwd"
+                    ToolTipService.ToolTip="Fast forward (.)">
+                    <FontIcon FontSize="18" Glyph="&#xEB9D;" />
+                </Button>
+            </Grid>
+
+            <!--  Text entry  -->
+            <Grid Grid.Row="4" ColumnSpacing="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox
+                    x:Name="TextEntry"
+                    AutomationProperties.Name="Text to send to Roku"
+                    KeyDown="TextEntry_KeyDown"
+                    PlaceholderText="Type into a Roku search box" />
+                <Button
+                    Grid.Column="1"
+                    AutomationProperties.Name="Send text"
+                    Click="SendText_Click"
+                    Style="{StaticResource AccentButtonStyle}"
+                    ToolTipService.ToolTip="Send text (Enter)">
+                    <FontIcon FontSize="14" Glyph="&#xE724;" />
+                </Button>
+                <Button
+                    Grid.Column="2"
+                    AutomationProperties.Name="Delete a character"
+                    Click="Key_Click"
+                    Tag="Backspace"
+                    ToolTipService.ToolTip="Delete a character on the Roku">
+                    <FontIcon FontSize="14" Glyph="&#xE750;" />
+                </Button>
+            </Grid>
+        </Grid>
+
+        <!--  Device picker  -->
+        <Grid
+            x:Name="DevicesPanel"
+            Padding="16,12,16,16"
+            RowSpacing="12"
+            Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid ColumnSpacing="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button
+                    x:Name="DevicesBackButton"
+                    AutomationProperties.Name="Back to remote"
+                    Click="DevicesBack_Click"
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTipService.ToolTip="Back to remote">
+                    <FontIcon FontSize="16" Glyph="&#xE72B;" />
+                </Button>
+                <TextBlock
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Text="Choose your Roku" />
+                <Button
+                    x:Name="RescanButton"
+                    Grid.Column="2"
+                    AutomationProperties.Name="Search again"
+                    Click="Rescan_Click"
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTipService.ToolTip="Search again">
+                    <FontIcon FontSize="16" Glyph="&#xE72C;" />
+                </Button>
+            </Grid>
+
+            <StackPanel
+                x:Name="SearchingPanel"
+                Grid.Row="1"
+                Orientation="Horizontal"
+                Spacing="10">
+                <ProgressRing
+                    Width="16"
+                    Height="16"
+                    IsActive="True" />
+                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Looking for Rokus on your network…" />
+            </StackPanel>
+            <TextBlock
+                x:Name="NoDevicesText"
+                Grid.Row="1"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Text="No Rokus found. Make sure the Roku is on and connected to the same network as this PC."
+                TextWrapping="Wrap"
+                Visibility="Collapsed" />
+
+            <ListView
+                x:Name="DeviceList"
+                Grid.Row="2"
+                Margin="-12,0"
+                IsItemClickEnabled="True"
+                ItemClick="DeviceList_ItemClick"
+                SelectionMode="None">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="services:RokuDevice">
+                        <Grid Padding="0,8" ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <FontIcon Glyph="&#xE7F4;" />
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind Name}" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind Details}" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <StackPanel Grid.Row="3" Spacing="6">
+                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Or enter its IP address" />
+                <Grid ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+                        x:Name="ManualHostBox"
+                        AutomationProperties.Name="Roku IP address"
+                        KeyDown="ManualHostBox_KeyDown"
+                        PlaceholderText="192.168.1.50" />
+                    <Button
+                        x:Name="ConnectButton"
+                        Grid.Column="1"
+                        Click="Connect_Click"
+                        Content="Connect" />
+                </Grid>
+                <TextBlock
+                    x:Name="ManualErrorText"
+                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    TextWrapping="Wrap"
+                    Visibility="Collapsed" />
+            </StackPanel>
+
+            <TextBlock
+                Grid.Row="4"
+                Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                Style="{StaticResource CaptionTextBlockStyle}"
+                Text="Find the IP on the Roku under Settings › Network › About. If it won't respond, set Settings › System › Advanced system settings › Control by mobile apps › Network access to Default."
+                TextWrapping="Wrap" />
+        </Grid>
+
+        <!--  Connection help, floated over everything rather than pushing the remote around  -->
+        <Border
+            x:Name="ErrorOverlay"
+            Margin="12"
+            VerticalAlignment="Bottom"
+            Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+            CornerRadius="{StaticResource OverlayCornerRadius}"
+            Translation="0,0,32"
+            Visibility="Collapsed">
+            <Border.Shadow>
+                <ThemeShadow />
+            </Border.Shadow>
+            <InfoBar
+                x:Name="ErrorBar"
+                Title="Can't control this Roku"
+                Closed="ErrorBar_Closed"
+                IsOpen="True"
+                Severity="Warning" />
+        </Border>
+    </Grid>
+</UserControl>
