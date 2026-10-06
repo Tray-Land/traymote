@@ -1,5 +1,7 @@
+using System.Numerics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Traymote.Services;
@@ -14,6 +16,7 @@ public sealed partial class RemoteView : UserControl, IDisposable
 {
     private RemoteService _remote = null!;
     private bool _isDiscovering;
+    private Dictionary<string, ButtonBase>? _keyButtons;
 
     public RemoteView()
     {
@@ -121,8 +124,67 @@ public sealed partial class RemoteView : UserControl, IDisposable
 
     private async void Key_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is FrameworkElement { Tag: string key })
+        if (sender is FrameworkElement { Tag: string key } button)
+        {
+            Pulse(button, highlight: false);
             await _remote.SendKeyAsync(key);
+        }
+    }
+
+    /// <summary>Finds the remote button that sends the given Roku key, so shortcuts can animate it.</summary>
+    private ButtonBase? FindKeyButton(string key)
+    {
+        if (_keyButtons is null)
+        {
+            _keyButtons = [];
+            CollectKeyButtons(RemotePanel);
+        }
+
+        return _keyButtons.GetValueOrDefault(key);
+    }
+
+    private void CollectKeyButtons(DependencyObject parent)
+    {
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+            if (child is ButtonBase { Tag: string tag } button)
+                _keyButtons![tag] = button;
+
+            CollectKeyButtons(child);
+        }
+    }
+
+    /// <summary>
+    /// A quick squish-and-spring-back. Keyboard shortcuts also flash the button's fill, since there
+    /// is no pointer to give the usual pressed feedback.
+    /// </summary>
+    private void Pulse(UIElement element, bool highlight)
+    {
+        if (element is not FrameworkElement fe)
+            return;
+
+        element.ScaleTransition ??= new Vector3Transition { Duration = TimeSpan.FromMilliseconds(90) };
+        element.CenterPoint = new Vector3((float)fe.ActualWidth / 2, (float)fe.ActualHeight / 2, 0);
+        element.Scale = new Vector3(0.88f, 0.88f, 1f);
+
+        Control? control = element as Control;
+        if (highlight && control is not null
+            && Application.Current.Resources.TryGetValue("ControlFillColorTertiaryBrush", out object brush))
+        {
+            control.Background = (Brush)brush;
+        }
+
+        var timer = DispatcherQueue.CreateTimer();
+        timer.Interval = TimeSpan.FromMilliseconds(110);
+        timer.IsRepeating = false;
+        timer.Tick += (_, _) =>
+        {
+            element.Scale = Vector3.One;
+            if (highlight)
+                control?.ClearValue(Control.BackgroundProperty);
+        };
+        timer.Start();
     }
 
     private async void SendText_Click(object sender, RoutedEventArgs e) => await SendTextAsync();
@@ -175,6 +237,9 @@ public sealed partial class RemoteView : UserControl, IDisposable
             return;
 
         e.Handled = true;
+        if (FindKeyButton(key) is { } button)
+            Pulse(button, highlight: true);
+
         await _remote.SendKeyAsync(key);
     }
 
