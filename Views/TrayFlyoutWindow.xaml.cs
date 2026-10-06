@@ -334,6 +334,12 @@ public sealed partial class TrayFlyoutWindow : WindowEx
         {
             _isShowing = false;
             _hideTimer.Stop();
+
+            if (_isPopupVisible && !IsShowingSettings)
+            {
+                DispatcherQueue.TryEnqueue(_page.FocusRemote);
+            }
+
             return;
         }
 

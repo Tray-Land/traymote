@@ -51,8 +51,18 @@ public sealed partial class RemoteView : UserControl, IDisposable
         DevicesPanel.Visibility = Visibility.Collapsed;
         RemotePanel.Visibility = Visibility.Visible;
 
-        // Focus something that isn't the text box, so the keyboard shortcuts work right away.
-        OkButton.Focus(FocusState.Programmatic);
+        FocusRemote();
+    }
+
+    /// <summary>
+    /// Focus something that isn't the text box, so the keyboard shortcuts work right away. Also
+    /// called on window activation: focusing before the window is active leaves XAML with no
+    /// keyboard target, so arrow keys do nothing until a click.
+    /// </summary>
+    internal void FocusRemote()
+    {
+        if (RemotePanel.Visibility == Visibility.Visible && TextEntry.FocusState == FocusState.Unfocused)
+            OkButton.Focus(FocusState.Programmatic);
     }
 
     private async void ShowDevices()
