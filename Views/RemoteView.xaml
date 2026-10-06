@@ -11,6 +11,8 @@
             <Setter Property="Height" Value="52" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="CornerRadius" Value="26" />
+            <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
         <Style x:Key="PadButtonStyle" TargetType="RepeatButton">
@@ -37,7 +39,7 @@
     <Grid PreviewKeyDown="Root_PreviewKeyDown">
 
         <!--  Remote  -->
-        <Grid x:Name="RemotePanel" Padding="16,12,16,16" RowSpacing="16">
+        <Grid x:Name="RemotePanel" Padding="20,16,20,20" RowSpacing="14">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -260,7 +262,10 @@
             </Grid>
 
             <!--  Text entry  -->
-            <Grid Grid.Row="4" ColumnSpacing="6">
+            <Grid
+                Grid.Row="4"
+                Margin="0,4,0,0"
+                ColumnSpacing="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -268,21 +273,32 @@
                 </Grid.ColumnDefinitions>
                 <TextBox
                     x:Name="TextEntry"
+                    MinHeight="36"
+                    VerticalAlignment="Center"
                     AutomationProperties.Name="Text to send to Roku"
+                    CornerRadius="8"
                     KeyDown="TextEntry_KeyDown"
-                    PlaceholderText="Type into a Roku search box" />
+                    PlaceholderText="Type to search…" />
                 <Button
                     Grid.Column="1"
+                    Width="40"
+                    Height="36"
+                    Padding="0"
                     AutomationProperties.Name="Send text"
                     Click="SendText_Click"
+                    CornerRadius="8"
                     Style="{StaticResource AccentButtonStyle}"
                     ToolTipService.ToolTip="Send text (Enter)">
                     <FontIcon FontSize="14" Glyph="&#xE724;" />
                 </Button>
                 <Button
                     Grid.Column="2"
+                    Width="40"
+                    Height="36"
+                    Padding="0"
                     AutomationProperties.Name="Delete a character"
                     Click="Key_Click"
+                    CornerRadius="8"
                     Tag="Backspace"
                     ToolTipService.ToolTip="Delete a character on the Roku">
                     <FontIcon FontSize="14" Glyph="&#xE750;" />

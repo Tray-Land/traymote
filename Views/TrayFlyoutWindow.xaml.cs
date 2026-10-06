@@ -24,8 +24,8 @@ namespace Traymote.Views;
 /// </summary>
 public sealed partial class TrayFlyoutWindow : WindowEx
 {
-    private const int PopupWidth = 300;
-    private const int PopupHeight = 510;
+    private const int PopupWidth = 340;
+    private const int PopupHeight = 530;
 
     private const int WS_EX_TOOLWINDOW = 0x00000080;
     private const int WS_EX_LAYERED = 0x00080000;
