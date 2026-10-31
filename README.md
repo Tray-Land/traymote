@@ -25,6 +25,10 @@ Click the tray icon and a small flyout opens next to the taskbar with a full Rok
 
 To find a Roku's IP address, go to Settings › Network › About on the Roku.
 
+## Install
+
+Download [Traymote.appinstaller](https://github.com/Tray-Land/traymote/releases/latest/download/Traymote.appinstaller) and open it. Windows installs the right version for your PC (x64 or ARM64) and keeps it updated.
+
 ## Building
 
 Prerequisites:
@@ -48,12 +52,15 @@ Traymote is an MSIX-packaged app and needs package identity to run. Use `dotnet 
 
 ## Releasing
 
-`build-msix-for-gh.ps1` builds and signs an MSIX and publishes it as a GitHub release:
+`build-msix-for-gh.ps1` builds a signed x64 + ARM64 `.msixbundle` with an auto-updating `.appinstaller` feed and creates a draft GitHub release:
+
+1. Bump `Identity/@Version` in `Package.appxmanifest`, commit and push.
+2. `.\build-msix-for-gh.ps1` and review the draft on GitHub.
+3. Publish the draft as the latest release without changing its tag.
+4. `.\build-msix-for-gh.ps1 -VerifyPublished` to check the live feed.
 
 ```powershell
-.\build-msix-for-gh.ps1                 # build, sign, tag and create a GitHub release
-.\build-msix-for-gh.ps1 -SkipRelease    # build and sign only
-.\build-msix-for-gh.ps1 -Prerelease -Notes "First preview"
+.\build-msix-for-gh.ps1 -SkipRelease -NoSign   # build and check the bundle only
 ```
 
 The release tag is derived from the version in `Package.appxmanifest`. The script needs an authenticated `gh` CLI.
