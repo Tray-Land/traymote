@@ -11,6 +11,7 @@ Click the tray icon and a small flyout opens next to the taskbar with a full Rok
 - **Manual connect.** If discovery can't see your Roku, type its IP address (`192.168.1.50`, `192.168.1.50:8060` and full URLs all work).
 - **Full remote.** D-pad, Select, Back, Home, Play/Pause, Rewind, Fast Forward and the `*` options button.
 - **Keyboard control.** With the flyout focused, use the arrow keys, `Enter` (Select), `Backspace` (Back), `H` (Home), `Space` (Play/Pause), `,` (Rewind), `.` (Fast Forward) and `I` or `*` (Options).
+- **Global hotkey.** Press `Ctrl+Alt+R` from anywhere to open or hide the remote. In Settings, turn the shortcut off or click its button and press a replacement combination. Changes apply immediately and are remembered; conflicts with other apps are shown there.
 - **Text entry.** Type into Roku search boxes from your PC keyboard.
 - **Remembers your device** and reconnects automatically. Reconnect and device switching are in the flyout menu.
 - **Start with Windows**, toggled from the in-flyout settings page.
@@ -46,6 +47,9 @@ dotnet build -c Debug -p:Platform=$Platform
 
 # Run with package identity (registers a loose-layout package via winapp)
 dotnet run -c Debug -p:Platform=$Platform
+
+# Pure shortcut and settings tests (no WinUI host needed)
+dotnet test .\tests\Traymote.Tests\Traymote.Tests.csproj -c Debug -p:Platform=$Platform
 ```
 
 Traymote is an MSIX-packaged app and needs package identity to run. Use `dotnet run` or `winapp run`. Don't register the package by hand. To test first-run behavior, use `winapp run <build-output> --clean`, which wipes local settings.
@@ -77,7 +81,8 @@ Services/
   RokuClient                Minimal ECP client (keypress, text, device-info)
   RokuDiscovery             SSDP discovery across all local interfaces
   RemoteService             Connection state, remembered device, key/text sending
-  SettingsService           Persisted settings (remembered Roku)
+  SettingsService           Persisted settings (remembered Roku and global hotkey)
+  GlobalHotKeyService       System-wide shortcut via a message-only window, no polling
   StartupService            Start-with-Windows registration
   SystemThemeService        Light/dark theme tracking for UI and tray icon
   WindowPlacementService    Positions the flyout near the taskbar/tray
