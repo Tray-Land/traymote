@@ -29,7 +29,9 @@ public partial class App : Application
     private RegisteredWaitHandle? _showWait;
     private TrayIcon? _trayIcon;
     private TrayFlyoutWindow? _flyout;
+    private GlobalHotKeyService? _hotKey;
     private DispatcherQueue? _dispatcher;
+    private bool _isCapturingHotKey;
     private bool _isExiting;
 
     public App()
@@ -77,6 +79,9 @@ public partial class App : Application
         _remote.Changed += (_, _) => UpdateTooltip();
 
         InitializeTrayIcon();
+        _hotKey = new GlobalHotKeyService(() => _dispatcher.TryEnqueue(ToggleFlyoutFromHotKey));
+        SettingsService.HotKeyChanged += OnHotKeyChanged;
+        ApplyHotKey();
         StartAsync();
     }
 
@@ -105,6 +110,9 @@ public partial class App : Application
     {
         _isExiting = true;
         _flyout?.CloseWindow();
+        SettingsService.HotKeyChanged -= OnHotKeyChanged;
+        _hotKey?.Dispose();
+        _hotKey = null;
 
         if (_trayIcon is not null)
         {
@@ -118,6 +126,50 @@ public partial class App : Application
         _singleInstanceMutex?.ReleaseMutex();
         _singleInstanceMutex?.Dispose();
         Exit();
+    }
+
+    internal int HotKeyError => _hotKey?.LastError ?? 0;
+
+    internal void SetHotKeyCapture(bool capturing)
+    {
+        _isCapturingHotKey = capturing;
+        ApplyHotKey();
+    }
+
+    private void ToggleFlyoutFromHotKey()
+    {
+        if (_isExiting || _isCapturingHotKey)
+        {
+            return;
+        }
+
+        if (_flyout?.IsPopupVisible == true)
+        {
+            _flyout.HidePopup();
+        }
+        else
+        {
+            ShowFlyout();
+        }
+    }
+
+    private void OnHotKeyChanged(object? sender, EventArgs e) => ApplyHotKey();
+
+    private void ApplyHotKey()
+    {
+        if (_isExiting)
+        {
+            return;
+        }
+
+        if (SettingsService.HotKeyEnabled && !_isCapturingHotKey)
+        {
+            _hotKey?.Register(SettingsService.HotKey);
+        }
+        else
+        {
+            _hotKey?.Unregister();
+        }
     }
 
     private async void StartAsync()

@@ -37,37 +37,82 @@
         </Grid>
 
         <ScrollViewer Grid.Row="1">
-            <Grid
-                Padding="16,12"
-                VerticalAlignment="Top"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                ColumnSpacing="12"
-                CornerRadius="4">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Start with Windows" />
+            <StackPanel Spacing="12">
+                <Grid
+                    Padding="16,12"
+                    VerticalAlignment="Top"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    ColumnSpacing="12"
+                    CornerRadius="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Start with Windows" />
+                        <TextBlock
+                            x:Name="StartupDescription"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="Keep the remote ready after you sign in."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                    <ToggleSwitch
+                        x:Name="StartupToggle"
+                        Grid.Column="1"
+                        MinWidth="0"
+                        AutomationProperties.Name="Start with Windows"
+                        IsEnabled="False"
+                        OffContent=""
+                        OnContent=""
+                        Toggled="StartupToggle_Toggled" />
+                </Grid>
+                <StackPanel
+                    Padding="16,12"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Spacing="8">
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            x:Name="HotKeyLabel"
+                            x:Uid="HotKeyLabel"
+                            VerticalAlignment="Center"
+                            TextWrapping="Wrap" />
+                        <ToggleSwitch
+                            x:Name="HotKeyToggle"
+                            AutomationProperties.AutomationId="HotKeyToggle"
+                            AutomationProperties.LabeledBy="{x:Bind HotKeyLabel}"
+                            Grid.Column="1"
+                            MinWidth="0"
+                            OffContent=""
+                            OnContent=""
+                            Toggled="HotKeyToggle_Toggled" />
+                    </Grid>
                     <TextBlock
-                        x:Name="StartupDescription"
+                        x:Name="HotKeyDescription"
+                        AutomationProperties.AutomationId="HotKeyDescription"
+                        AutomationProperties.LiveSetting="Polite"
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="Keep the remote ready after you sign in."
                         TextWrapping="Wrap" />
+                    <Button
+                        x:Name="HotKeyButton"
+                        x:Uid="HotKeyButton"
+                        AutomationProperties.AutomationId="HotKeyButton"
+                        HorizontalAlignment="Stretch"
+                        Click="HotKeyButton_Click"
+                        LostFocus="HotKeyButton_LostFocus"
+                        PreviewKeyDown="HotKeyButton_PreviewKeyDown" />
                 </StackPanel>
-                <ToggleSwitch
-                    x:Name="StartupToggle"
-                    Grid.Column="1"
-                    MinWidth="0"
-                    AutomationProperties.Name="Start with Windows"
-                    IsEnabled="False"
-                    OffContent=""
-                    OnContent=""
-                    Toggled="StartupToggle_Toggled" />
-            </Grid>
+            </StackPanel>
         </ScrollViewer>
 
         <TextBlock

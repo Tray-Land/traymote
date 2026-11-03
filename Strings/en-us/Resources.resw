@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="HotKeyLabel.Text" xml:space="preserve"><value>Global hotkey</value></data>
+  <data name="HotKeyButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Change hotkey</value></data>
+  <data name="HotKeyButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Click, then press your preferred shortcut.</value></data>
+  <data name="HotKeyCapturePrompt" xml:space="preserve"><value>Press a shortcut (Esc cancels)</value></data>
+  <data name="HotKeyButtonNameFormat" xml:space="preserve"><value>Change hotkey: {0}</value></data>
+  <data name="HotKeyCaptureHelp" xml:space="preserve"><value>Hold Ctrl, Alt, Shift, or Win and press a key. Esc cancels.</value></data>
+  <data name="HotKeyInvalid" xml:space="preserve"><value>Include a modifier and a non-modifier key. Esc cancels; F12 is reserved.</value></data>
+  <data name="HotKeyReady" xml:space="preserve"><value>Open or hide the remote from anywhere.</value></data>
+  <data name="HotKeyDisabled" xml:space="preserve"><value>Turn on to open the remote with a shortcut.</value></data>
+  <data name="HotKeyConflict" xml:space="preserve"><value>Another app is using this shortcut. Choose a different one.</value></data>
+  <data name="HotKeyUnavailable" xml:space="preserve"><value>Windows couldn't register this shortcut. Choose another one or try turning it off and on.</value></data>
+  <data name="HotKeySaveFailed" xml:space="preserve"><value>Couldn't save the shortcut. Your previous setting is still active.</value></data>
+  <data name="HotKeyControl" xml:space="preserve"><value>Ctrl</value></data>
+  <data name="HotKeyAlt" xml:space="preserve"><value>Alt</value></data>
+  <data name="HotKeyShift" xml:space="preserve"><value>Shift</value></data>
+  <data name="HotKeyWin" xml:space="preserve"><value>Win</value></data>
+  <data name="HotKeySpace" xml:space="preserve"><value>Space</value></data>
+  <data name="HotKeyFunctionKey" xml:space="preserve"><value>F{0}</value></data>
+  <data name="HotKeyVirtualKey" xml:space="preserve"><value>Key {0:X2}</value></data>
+</root>

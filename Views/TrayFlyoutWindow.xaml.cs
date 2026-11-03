@@ -139,6 +139,7 @@ public sealed partial class TrayFlyoutWindow : WindowEx
 
     public void ShowMainPage()
     {
+        _settingsPage?.OnHidden();
         PageHost.Content = _page;
     }
 
@@ -179,6 +180,7 @@ public sealed partial class TrayFlyoutWindow : WindowEx
         }
 
         _isPopupVisible = false;
+        _settingsPage?.OnHidden();
         _lastDismissedAtUtc = DateTime.UtcNow;
         PlayHideAnimation();
 
@@ -202,6 +204,8 @@ public sealed partial class TrayFlyoutWindow : WindowEx
         _closeTimer.Stop();
         _animationTimer.Stop();
         _page.Dispose();
+        _settingsPage?.OnHidden();
+        _settingsPage = null;
 
         _uiSettings.ColorValuesChanged -= OnColorValuesChanged;
         Activated -= OnWindowActivated;
@@ -391,7 +395,14 @@ public sealed partial class TrayFlyoutWindow : WindowEx
         args.Handled = true;
         if (IsShowingSettings)
         {
-            ShowMainPage();
+            if (_settingsPage!.IsCapturingHotKey)
+            {
+                _settingsPage.OnHidden();
+            }
+            else
+            {
+                ShowMainPage();
+            }
         }
         else
         {

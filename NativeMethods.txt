@@ -1,5 +1,8 @@
 AllowSetForegroundWindow
 APPBARDATA
+CreateWindowEx
+DefWindowProc
+DestroyWindow
 DwmSetWindowAttribute
 DWM_WINDOW_CORNER_PREFERENCE
 GetAncestor
@@ -12,6 +15,8 @@ GetForegroundWindow
 GetWindowLong
 MonitorFromPoint
 NOTIFYICONIDENTIFIER
+RegisterClass
+RegisterHotKey
 RegNotifyChangeKeyValue
 SetForegroundWindow
 SetLayeredWindowAttributes
@@ -19,3 +24,5 @@ SetProcessWorkingSetSize
 SetWindowLong
 SHAppBarMessage
 Shell_NotifyIconGetRect
+UnregisterClass
+UnregisterHotKey
