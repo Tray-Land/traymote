@@ -21,6 +21,10 @@ public sealed partial class RemoteView : UserControl, IDisposable
     public RemoteView()
     {
         InitializeComponent();
+
+        // A freshly built flyout isn't laid out yet when OnShown and Activated try to focus, so
+        // try again once the view is in the live tree (also covers returning from Settings).
+        Loaded += (_, _) => FocusRemote();
     }
 
     internal void Initialize(RemoteService remote)
@@ -58,9 +62,10 @@ public sealed partial class RemoteView : UserControl, IDisposable
     }
 
     /// <summary>
-    /// Focus something that isn't the text box, so the keyboard shortcuts work right away. Also
-    /// called on window activation: focusing before the window is active leaves XAML with no
-    /// keyboard target, so arrow keys do nothing until a click.
+    /// Focus something that isn't the text box, so the keyboard shortcuts work right away. With
+    /// no focused element, key events never reach <see cref="Root_PreviewKeyDown"/>. Called on
+    /// show, on window activation and on <see cref="FrameworkElement.Loaded"/>: Focus() quietly
+    /// fails until the view is loaded, which a new flyout window isn't until its first layout.
     /// </summary>
     internal void FocusRemote()
     {
