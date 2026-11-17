@@ -28,6 +28,8 @@ To find a Roku's IP address, go to Settings › Network › About on the Roku.
 
 ## Install
 
+[<img src="docs/MSIX.svg" alt="Install Traymote (MSIX)" width="212">](https://github.com/Tray-Land/traymote/releases/latest/download/Traymote.appinstaller)
+
 Download [Traymote.appinstaller](https://github.com/Tray-Land/traymote/releases/latest/download/Traymote.appinstaller) and open it. Windows installs the right version for your PC (x64 or ARM64) and keeps it updated.
 
 ## Building
